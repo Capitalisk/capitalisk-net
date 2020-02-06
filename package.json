@@ -1,0 +1,28 @@
+{
+  "name": "leasehold-net",
+  "version": "1.0.0",
+  "description": "Leasehold network module.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Leasehold/leasehold-net.git"
+  },
+  "keywords": [
+    "leasehold",
+    "network",
+    "module",
+    "p2p"
+  ],
+  "author": "Jonathan Gros-Dubois",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/Leasehold/leasehold-net/issues"
+  },
+  "homepage": "https://github.com/Leasehold/leasehold-net#readme",
+  "dependencies": {
+    "@liskhq/lisk-p2p": "^0.3.6"
+  }
+}
