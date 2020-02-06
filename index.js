@@ -118,6 +118,14 @@ class LeaseholdNet {
     this.options = options;
     this.logger = logger;
 
+    if (this.options.peerSelectionPluginPath) {
+      let peerSelectionPlugin = require(this.options.peerSelectionPluginPath);
+
+      this.peerSelectionForConnection = peerSelectionPlugin.peerSelectionForConnection;
+      this.peerSelectionForRequest = peerSelectionPlugin.peerSelectionForRequest;
+      this.peerSelectionForSend = peerSelectionPlugin.peerSelectionForSend;
+    }
+
     let peerListFilePath = this.options.peerListFilePath || DEFAULT_PEER_LIST_FILE_PATH;
 
     // Load peers from the database that were tried or connected the last time node was running
@@ -166,7 +174,7 @@ class LeaseholdNet {
         }))
       : [];
 
-    this.p2p = new P2P({
+    let p2pConfig = {
       nodeInfo: initialNodeInfo,
       hostIp: this.options.hostIp,
       blacklistedIPs,
@@ -187,7 +195,19 @@ class LeaseholdNet {
       maxPeerInfoSize: this.options.maxPeerInfoSize,
       wsMaxPayload: this.options.wsMaxPayload,
       secret: this.secret
-    });
+    };
+
+    if (this.peerSelectionForConnection) {
+      p2pConfig.peerSelectionForConnection = this.peerSelectionForConnection;
+    }
+    if (this.peerSelectionForRequest) {
+      p2pConfig.peerSelectionForRequest = this.peerSelectionForRequest;
+    }
+    if (this.peerSelectionForSend) {
+      p2pConfig.peerSelectionForSend = this.peerSelectionForSend;
+    }
+
+    this.p2p = new P2P(p2pConfig);
 
     this.channel.subscribe('app:state:updated', event => {
       let newNodeInfo = sanitizeNodeInfo(event.data);
