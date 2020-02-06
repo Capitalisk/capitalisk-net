@@ -1,26 +1,32 @@
 const crypto = require('crypto');
+const { lookupPeersIPs } = require('./utils');
+const util = require('util');
+const fs = require('fs');
+const writeFile = util.promisify(fs.writeFile);
+const readFile = util.promisify(fs.readFile);
+const path = require('path');
 const {
   P2P,
-  events: {
-    EVENT_NETWORK_READY,
-    EVENT_NEW_INBOUND_PEER,
-    EVENT_CLOSE_INBOUND,
-    EVENT_CLOSE_OUTBOUND,
-    EVENT_CONNECT_OUTBOUND,
-    EVENT_DISCOVERED_PEER,
-    EVENT_FAILED_TO_FETCH_PEER_INFO,
-    EVENT_FAILED_TO_PUSH_NODE_INFO,
-    EVENT_OUTBOUND_SOCKET_ERROR,
-    EVENT_INBOUND_SOCKET_ERROR,
-    EVENT_UPDATED_PEER_INFO,
-    EVENT_FAILED_PEER_INFO_UPDATE,
-    EVENT_REQUEST_RECEIVED,
-    EVENT_MESSAGE_RECEIVED,
-    EVENT_BAN_PEER,
-    EVENT_UNBAN_PEER
-  }
+  EVENT_NETWORK_READY,
+  EVENT_NEW_INBOUND_PEER,
+  EVENT_CLOSE_INBOUND,
+  EVENT_CLOSE_OUTBOUND,
+  EVENT_CONNECT_OUTBOUND,
+  EVENT_DISCOVERED_PEER,
+  EVENT_FAILED_TO_FETCH_PEER_INFO,
+  EVENT_FAILED_TO_PUSH_NODE_INFO,
+  EVENT_OUTBOUND_SOCKET_ERROR,
+  EVENT_INBOUND_SOCKET_ERROR,
+  EVENT_UPDATED_PEER_INFO,
+  EVENT_FAILED_PEER_INFO_UPDATE,
+  EVENT_REQUEST_RECEIVED,
+  EVENT_MESSAGE_RECEIVED,
+  EVENT_BAN_PEER,
+  EVENT_UNBAN_PEER
 } = require('@liskhq/lisk-p2p');
-const { lookupPeersIPs } = require('./utils');
+
+const DEFAULT_PEER_SAVE_INTERVAL = 10 * 60 * 1000; // 10 mins in ms
+const DEFAULT_PEER_LIST_FILE_PATH = path.join(__dirname, 'peers.json');
 
 class LeaseholdNet {
   constructor() {
@@ -35,7 +41,7 @@ class LeaseholdNet {
   }
 
   get dependencies() {
-    return [];
+    return ['app'];
   }
 
   get events() {
@@ -112,14 +118,31 @@ class LeaseholdNet {
     this.options = options;
     this.logger = logger;
 
-    // TODO 2: Save and load previous peers from a JSON file.
+    let peerListFilePath = this.options.peerListFilePath || DEFAULT_PEER_LIST_FILE_PATH;
+
+    // Load peers from the database that were tried or connected the last time node was running
+    let previousPeersStr;
+    try {
+      previousPeersStr = await readFile(peerListFilePath, 'utf8');
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        this.logger.debug(`No existing peer list file found at ${peerListFilePath}`);
+      } else {
+        this.logger.error(`Failed to read file ${peerListFilePath} - ${err.message}`);
+      }
+    }
+    let previousPeers = [];
+    try {
+      previousPeers = previousPeersStr ? JSON.parse(previousPeersStr) : [];
+    } catch (err) {
+      this.logger.error(`Failed to parse JSON of previous peers - ${err.message}`);
+    }
 
     this.secret = crypto.randomBytes(4).readUInt32BE(0);
 
     let sanitizeNodeInfo = nodeInfo => ({
       ...nodeInfo,
-      wsPort: this.options.wsPort,
-      advertiseAddress: this.options.advertiseAddress
+      wsPort: this.options.wsPort
     });
 
     let initialNodeInfo = sanitizeNodeInfo(
@@ -151,8 +174,9 @@ class LeaseholdNet {
       whitelistedPeers,
       seedPeers: seedPeers.map(peer => ({
         ipAddress: peer.ip,
-        wsPort: peer.wsPort,
+        wsPort: peer.wsPort
       })),
+      previousPeers,
       maxOutboundConnections: this.options.maxOutboundConnections,
       maxInboundConnections: this.options.maxInboundConnections,
       peerBanTime: this.options.peerBanTime,
@@ -319,6 +343,14 @@ class LeaseholdNet {
         'EVENT_MESSAGE_RECEIVED: Peer ban has expired'
       );
     });
+
+    setInterval(async () => {
+      let peersToSave = this.p2p.getConnectedPeers();
+			if (peersToSave.length) {
+        let peersString = JSON.stringify(peersToSave);
+        await writeFile(peerListFilePath, peersString);
+			}
+		}, DEFAULT_PEER_SAVE_INTERVAL);
 
     try {
       await this.p2p.start();
