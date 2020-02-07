@@ -366,11 +366,11 @@ class LeaseholdNet {
 
     setInterval(async () => {
       let peersToSave = this.p2p.getConnectedPeers();
-			if (peersToSave.length) {
+      if (peersToSave.length) {
         let peersString = JSON.stringify(peersToSave);
         await writeFile(peerListFilePath, peersString);
-			}
-		}, DEFAULT_PEER_SAVE_INTERVAL);
+      }
+    }, DEFAULT_PEER_SAVE_INTERVAL);
 
     try {
       await this.p2p.start();
