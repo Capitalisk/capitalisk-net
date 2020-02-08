@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const { lookupPeersIPs } = require('./utils');
+const { lookupPeersIPs, filterByParams, consolidatePeers } = require('./utils');
 const util = require('util');
 const fs = require('fs');
 const writeFile = util.promisify(fs.writeFile);
@@ -90,7 +90,7 @@ class LeaseholdNet {
       },
       getPeers: {
         handler: action => {
-          const peers = consolidatePeers({
+          let peers = consolidatePeers({
             connectedPeers: this.p2p.getConnectedPeers(),
             disconnectedPeers: this.p2p.getDisconnectedPeers()
           });
@@ -100,23 +100,23 @@ class LeaseholdNet {
       },
       getPeersCount: {
         handler: action => {
-          const peers = consolidatePeers({
+          let peers = consolidatePeers({
             connectedPeers: this.p2p.getConnectedPeers(),
             disconnectedPeers: this.p2p.getDisconnectedPeers()
           });
 
-          const { limit, offset, ...filterWithoutLimitOffset } = action.params;
+          let { limit, offset, ...filterWithoutLimitOffset } = action.params;
 
           return filterByParams(peers, filterWithoutLimitOffset).length;
         }
       },
       getUniqueOutboundConnectedPeersCount: {
         handler: action => {
-          const peers = consolidatePeers({
+          let peers = consolidatePeers({
             connectedPeers: this.p2p.getUniqueOutboundConnectedPeers()
           });
 
-          const { limit, offset, ...filterWithoutLimitOffset } = action.params;
+          let { limit, offset, ...filterWithoutLimitOffset } = action.params;
 
           return filterByParams(peers, filterWithoutLimitOffset).length;
         }
@@ -407,25 +407,5 @@ class LeaseholdNet {
     return this.p2p.stop();
   }
 };
-
-function consolidatePeers({connectedPeers = [], disconnectedPeers = []}) {
-  // Assign state 2 to the connected peers
-  const connectedList = connectedPeers.map(peer => {
-    const { ipAddress, options, minVersion, nethash, ...peerWithoutIp } = peer;
-
-    return { ip: ipAddress, ...peerWithoutIp, state: PEER_STATE_CONNECTED };
-  });
-  const disconnectedList = disconnectedPeers.map(peer => {
-    const { ipAddress, options, minVersion, nethash, ...peerWithoutIp } = peer;
-
-    return {
-      ip: ipAddress,
-      ...peerWithoutIp,
-      state: PEER_STATE_DISCONNECTED,
-    };
-  });
-
-  return [...connectedList, ...disconnectedList];
-}
 
 module.exports = LeaseholdNet;
