@@ -51,63 +51,79 @@ class LeaseholdNet {
   get actions() {
     return {
       request: {
-        handler: async (action) => {
+        handler: async action => {
           return this.p2p.request({
             procedure: action.params.procedure,
-            data: action.params.data,
+            data: action.params.data
           });
         }
       },
-      send: {
-        handler: async (action) => {
+      emit: {
+        handler: action => {
           return this.p2p.send({
             event: action.params.event,
-            data: action.params.data,
+            data: action.params.data
           });
         }
-      },
-      broadcast: {
-        handler: async (action) => {
-          return this.p2p.broadcast({
-            event: action.params.event,
-            data: action.params.data,
-          });
-        }
-      },
-      getConnectedPeers: {
-        handler: () => this.p2p.getConnectedPeers()
-      },
-      getDisconnectedPeers: {
-        handler: () => this.p2p.getDisconnectedPeers()
       },
       requestFromPeer: {
-        handler: async (action) => {
+        handler: async action => {
           return this.p2p.requestFromPeer(
             {
               procedure: action.params.procedure,
               data: action.params.data,
             },
-            action.params.peerId,
+            action.params.peerId
           );
         }
       },
-      sendToPeer: {
-        handler: async (action) => {
+      emitToPeer: {
+        handler: action => {
           return this.p2p.sendToPeer(
             {
               event: action.params.event,
               data: action.params.data,
             },
-            action.params.peerId,
+            action.params.peerId
           );
         }
       },
-      applyPenalty: {
-        handler: async (action) => {
-          return this.p2p.applyPenalty({
-            peerId: action.params.peerId,
-            penalty: action.params.penalty,
+      getPeers: {
+        handler: action => {
+          const peers = consolidatePeers({
+            connectedPeers: this.p2p.getConnectedPeers(),
+            disconnectedPeers: this.p2p.getDisconnectedPeers()
           });
+
+          return filterByParams(peers, action.params);
+        }
+      },
+      getPeersCount: {
+        handler: action => {
+          const peers = consolidatePeers({
+            connectedPeers: this.p2p.getConnectedPeers(),
+            disconnectedPeers: this.p2p.getDisconnectedPeers()
+          });
+
+          const { limit, offset, ...filterWithoutLimitOffset } = action.params;
+
+          return filterByParams(peers, filterWithoutLimitOffset).length;
+        }
+      },
+      getUniqueOutboundConnectedPeersCount: {
+        handler: action => {
+          const peers = consolidatePeers({
+            connectedPeers: this.p2p.getUniqueOutboundConnectedPeers()
+          });
+
+          const { limit, offset, ...filterWithoutLimitOffset } = action.params;
+
+          return filterByParams(peers, filterWithoutLimitOffset).length;
+        }
+      },
+      applyPenalty: {
+        handler: action => {
+          return this.p2p.applyPenalty(action.params.peerId, action.params.penalty);
         }
       }
     };
@@ -391,5 +407,25 @@ class LeaseholdNet {
     return this.p2p.stop();
   }
 };
+
+function consolidatePeers({connectedPeers = [], disconnectedPeers = []}) {
+  // Assign state 2 to the connected peers
+  const connectedList = connectedPeers.map(peer => {
+    const { ipAddress, options, minVersion, nethash, ...peerWithoutIp } = peer;
+
+    return { ip: ipAddress, ...peerWithoutIp, state: PEER_STATE_CONNECTED };
+  });
+  const disconnectedList = disconnectedPeers.map(peer => {
+    const { ipAddress, options, minVersion, nethash, ...peerWithoutIp } = peer;
+
+    return {
+      ip: ipAddress,
+      ...peerWithoutIp,
+      state: PEER_STATE_DISCONNECTED,
+    };
+  });
+
+  return [...connectedList, ...disconnectedList];
+}
 
 module.exports = LeaseholdNet;
