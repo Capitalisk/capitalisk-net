@@ -28,6 +28,8 @@ const {
 const DEFAULT_PEER_SAVE_INTERVAL = 10 * 60 * 1000; // 10 mins in ms
 const DEFAULT_PEER_LIST_FILE_PATH = path.join(__dirname, 'peers.json');
 
+const hasNamespaceReg = /:/;
+
 class LeaseholdNet {
   constructor() {
     this.channel = null;
