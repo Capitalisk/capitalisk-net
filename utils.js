@@ -60,6 +60,55 @@ const lookupPeersIPs = async (peersList, enabled) => {
   );
 };
 
+const sortPeers = (field, asc) => (a, b) => {
+  // Match the default JavaScript sort order.
+  if (a[field] === b[field]) {
+    return 0;
+  }
+  // Ascending
+  if (asc) {
+    // Undefined last
+    if (a[field] === undefined) {
+      return 1;
+    }
+    if (b[field] === undefined) {
+      return -1;
+    }
+    // Null second last
+    if (a[field] === null) {
+      return 1;
+    }
+    if (b[field] === null) {
+      return -1;
+    }
+    if (a[field] < b[field]) {
+      return -1;
+    }
+
+    return 1;
+  }
+  // Descending
+  // Undefined first
+  if (a[field] === undefined) {
+    return -1;
+  }
+  if (b[field] === undefined) {
+    return 1;
+  }
+  // Null second
+  if (a[field] === null) {
+    return -1;
+  }
+  if (b[field] === null) {
+    return 1;
+  }
+  if (a[field] < b[field]) {
+    return 1;
+  }
+
+  return -1;
+};
+
 const filterByParams = (peers, filters) => {
   const allowedFields = [
     'ip',
