@@ -27,6 +27,7 @@ const {
 
 const DEFAULT_PEER_SAVE_INTERVAL = 10 * 60 * 1000; // 10 mins in ms
 const DEFAULT_PEER_LIST_FILE_PATH = path.join(__dirname, 'peers.json');
+const MAX_CHANNEL_NAME_LENGTH = 200;
 
 const hasNamespaceReg = /:/;
 
@@ -365,7 +366,16 @@ class LeaseholdNet {
       this.logger.trace(
         `EVENT_MESSAGE_RECEIVED: Received inbound message from ${packet.peerId} for event ${packet.event}`
       );
-      this.channel.publish('network:event', packet);
+      let targetChannelName = `network:event:${packet.event}`;
+      if (targetChannelName.length > MAX_CHANNEL_NAME_LENGTH) {
+        this.logger.error(
+          `Peer ${packet.peerId} tried to publish data to a custom channel name which exceeded the max length of ${MAX_CHANNEL_NAME_LENGTH}`
+        );
+      } else {
+        this.channel.publish(targetChannelName, packet);
+      }
+      // For backward compatibility with Lisk chain module.
+      this.channel.publish('network:event', {data: packet});
     });
 
     this.p2p.on(EVENT_BAN_PEER, peerId => {
