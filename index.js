@@ -242,7 +242,7 @@ class LeaseholdNet {
 
     this.p2p.on(EVENT_NETWORK_READY, () => {
       this.logger.debug('Node connected to the network');
-      this.channel.publish('network:ready');
+      this.channel.publish('leasehold_net:ready');
     });
 
     this.p2p.on(EVENT_CLOSE_OUTBOUND, closePacket => {
@@ -366,7 +366,7 @@ class LeaseholdNet {
       this.logger.trace(
         `EVENT_MESSAGE_RECEIVED: Received inbound message from ${packet.peerId} for event ${packet.event}`
       );
-      let targetChannelName = `network:event:${packet.event}`;
+      let targetChannelName = `leasehold_net:event:${packet.event}`;
       if (targetChannelName.length > MAX_CHANNEL_NAME_LENGTH) {
         this.logger.error(
           `Peer ${packet.peerId} tried to publish data to a custom channel name which exceeded the max length of ${MAX_CHANNEL_NAME_LENGTH}`
@@ -375,7 +375,7 @@ class LeaseholdNet {
         this.channel.publish(targetChannelName, packet);
       }
       // For backward compatibility with Lisk chain module.
-      this.channel.publish('network:event', {data: packet});
+      this.channel.publish('leasehold_net:event', {data: packet});
     });
 
     this.p2p.on(EVENT_BAN_PEER, peerId => {
