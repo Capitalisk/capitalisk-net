@@ -138,11 +138,18 @@ class LeaseholdNet {
     this.logger = logger;
 
     if (this.options.peerSelectionPluginPath) {
+      this.logger.debug(
+        `Using peer selection plugin at path ${this.options.peerSelectionPluginPath} relative to leasehold-net module`
+      );
       let peerSelectionPlugin = require(this.options.peerSelectionPluginPath);
 
       this.peerSelectionForConnection = peerSelectionPlugin.peerSelectionForConnection;
       this.peerSelectionForRequest = peerSelectionPlugin.peerSelectionForRequest;
       this.peerSelectionForSend = peerSelectionPlugin.peerSelectionForSend;
+    } else {
+      this.logger.debug(
+        `Using default peer selection`
+      );
     }
 
     let peerListFilePath = this.options.peerListFilePath || DEFAULT_PEER_LIST_FILE_PATH;
