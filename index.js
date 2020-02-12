@@ -32,15 +32,12 @@ const MAX_CHANNEL_NAME_LENGTH = 200;
 const hasNamespaceReg = /:/;
 
 class LeaseholdNet {
-  constructor() {
-    this.channel = null;
+  constructor({alias, logger}) {
     this.options = {};
-    this.logger = null;
+    this.alias = alias;
+    this.logger = logger;
+    this.channel = null;
     this.secret = null;
-  }
-
-  get alias() {
-    return 'leasehold_net';
   }
 
   get dependencies() {
@@ -132,10 +129,9 @@ class LeaseholdNet {
     };
   }
 
-  async load(channel, options, logger) {
+  async load(channel, options) {
     this.channel = channel;
     this.options = options;
-    this.logger = logger;
 
     if (this.options.peerSelectionPluginPath) {
       this.logger.debug(
