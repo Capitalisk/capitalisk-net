@@ -378,7 +378,7 @@ class LeaseholdNet {
         this.channel.publish(targetChannelName, packet);
       }
       // For backward compatibility with Lisk chain module.
-      this.channel.publish('leasehold_net:event', {data: packet});
+      this.channel.publish('leasehold_net:event', packet);
     });
 
     this.p2p.on(EVENT_BAN_PEER, peerId => {
