@@ -28,13 +28,14 @@ const {
 const DEFAULT_PEER_SAVE_INTERVAL = 10 * 60 * 1000; // 10 mins in ms
 const DEFAULT_PEER_LIST_FILE_PATH = path.join(__dirname, 'peers.json');
 const MAX_CHANNEL_NAME_LENGTH = 200;
+const DEFAULT_MODULE_ALIAS = 'leasehold_net';
 
 const hasNamespaceReg = /:/;
 
 class LeaseholdNet {
-  constructor({alias, logger}) {
-    this.options = {};
-    this.alias = alias;
+  constructor({alias, logger, config}) {
+    this.options = config;
+    this.alias = alias || DEFAULT_MODULE_ALIAS;
     this.logger = logger;
     this.channel = null;
     this.secret = null;
@@ -129,9 +130,8 @@ class LeaseholdNet {
     };
   }
 
-  async load(channel, options) {
+  async load(channel) {
     this.channel = channel;
-    this.options = options;
 
     if (this.options.peerSelectionPluginPath) {
       this.logger.debug(
@@ -245,7 +245,7 @@ class LeaseholdNet {
 
     this.p2p.on(EVENT_NETWORK_READY, () => {
       this.logger.debug('Node connected to the network');
-      this.channel.publish('leasehold_net:ready');
+      this.channel.publish(`${this.alias}:ready`);
     });
 
     this.p2p.on(EVENT_CLOSE_OUTBOUND, closePacket => {
@@ -347,8 +347,7 @@ class LeaseholdNet {
         ? request.procedure
         : `chain:${request.procedure}`;
       try {
-        let result = await this.channel.invokePublic(sanitizedProcedure, {
-          data: request.data,
+        let result = await this.channel.invokePublic(sanitizedProcedure, request.data, {
           peerId: request.peerId,
         });
         this.logger.trace(
@@ -369,16 +368,16 @@ class LeaseholdNet {
       this.logger.trace(
         `EVENT_MESSAGE_RECEIVED: Received inbound message from ${packet.peerId} for event ${packet.event}`
       );
-      let targetChannelName = `leasehold_net:event:${packet.event}`;
+      let targetChannelName = `${this.alias}:event:${packet.event}`;
       if (targetChannelName.length > MAX_CHANNEL_NAME_LENGTH) {
         this.logger.error(
           `Peer ${packet.peerId} tried to publish data to a custom channel name which exceeded the max length of ${MAX_CHANNEL_NAME_LENGTH}`
         );
       } else {
-        this.channel.publish(targetChannelName, packet);
+        this.channel.publish(targetChannelName, packet.data, {peerId: packet.peerId});
       }
       // For backward compatibility with Lisk chain module.
-      this.channel.publish('leasehold_net:event', packet);
+      this.channel.publish(`${this.alias}:event`, packet);
     });
 
     this.p2p.on(EVENT_BAN_PEER, peerId => {
