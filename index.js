@@ -99,6 +99,15 @@ class LeaseholdNet {
           return filterByParams(peers, action.params);
         }
       },
+      getConnectedPeers: {
+        handler: action => {
+          let peers = consolidatePeers({
+            connectedPeers: this.p2p.getConnectedPeers()
+          });
+
+          return filterByParams(peers, action.params);
+        }
+      },
       getPeersCount: {
         handler: action => {
           let peers = consolidatePeers({
