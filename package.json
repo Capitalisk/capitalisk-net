@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/Leasehold/leasehold-net#readme",
   "dependencies": {
-    "@liskhq/lisk-p2p": "^0.3.6",
+    "lp2p": "^0.3.6",
     "lodash.shuffle": "^4.2.0"
   }
 }

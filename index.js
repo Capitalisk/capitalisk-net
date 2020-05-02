@@ -224,7 +224,8 @@ class LeaseholdNet {
       maxPeerDiscoveryResponseLength: this.options
         .maxPeerDiscoveryResponseLength,
       maxPeerInfoSize: this.options.maxPeerInfoSize,
-      wsMaxPayload: this.options.wsMaxPayload,
+      wsMaxPayloadInbound: this.options.wsMaxPayloadInbound,
+      wsMaxPayloadOutbound: this.options.wsMaxPayloadOutbound,
       secret: this.secret
     };
 
