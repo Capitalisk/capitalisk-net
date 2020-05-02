@@ -23,7 +23,7 @@ const {
   EVENT_MESSAGE_RECEIVED,
   EVENT_BAN_PEER,
   EVENT_UNBAN_PEER
-} = require('@liskhq/lisk-p2p');
+} = require('lp2p');
 
 const DEFAULT_PEER_SAVE_INTERVAL = 10 * 60 * 1000; // 10 mins in ms
 const DEFAULT_PEER_LIST_FILE_PATH = path.join(__dirname, 'peers.json');

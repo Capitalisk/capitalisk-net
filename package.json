@@ -1,6 +1,6 @@
 {
   "name": "leasehold-net",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Leasehold network module.",
   "main": "index.js",
   "scripts": {
