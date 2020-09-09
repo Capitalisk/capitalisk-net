@@ -64,7 +64,7 @@ class LeaseholdNet {
           return this.p2p.send({
             event: action.params.event,
             data: action.params.data
-          });
+          }, action.params.peerLimit);
         }
       },
       requestFromPeer: {
