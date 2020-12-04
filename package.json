@@ -1,6 +1,6 @@
 {
   "name": "leasehold-net",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "Leasehold network module.",
   "main": "index.js",
   "scripts": {
@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/Leasehold/leasehold-net#readme",
   "dependencies": {
-    "lp2p": "^0.4.1",
+    "lp2p": "^0.4.2",
     "lodash.shuffle": "^4.2.0"
   }
 }
