@@ -216,16 +216,25 @@ class LeaseholdNet {
         wsPort: peer.wsPort
       })),
       previousPeers,
+      connectTimeout: this.options.connectTimeout,
+      ackTimeout: this.options.ackTimeout,
       maxOutboundConnections: this.options.maxOutboundConnections,
       maxInboundConnections: this.options.maxInboundConnections,
       peerBanTime: this.options.peerBanTime,
       populatorInterval: this.options.populatorInterval,
       sendPeerLimit: this.options.sendPeerLimit,
-      maxPeerDiscoveryResponseLength: this.options
-        .maxPeerDiscoveryResponseLength,
+      maxPeerDiscoveryResponseLength: this.options.maxPeerDiscoveryResponseLength,
       maxPeerInfoSize: this.options.maxPeerInfoSize,
+      outboundShuffleInterval: this.options.outboundShuffleInterval,
+      netgroupProtectionRatio: this.options.netgroupProtectionRatio,
+      latencyProtectionRatio: this.options.latencyProtectionRatio,
+      productivityProtectionRatio: this.options.productivityProtectionRatio,
+      longevityProtectionRatio: this.options.longevityProtectionRatio,
       wsMaxPayloadInbound: this.options.wsMaxPayloadInbound,
       wsMaxPayloadOutbound: this.options.wsMaxPayloadOutbound,
+      wsMaxMessageRate: this.options.wsMaxMessageRate,
+      wsMaxMessageRatePenalty: this.options.wsMaxMessageRatePenalty,
+      rateCalculationInterval: this.options.rateCalculationInterval,
       secret: this.secret
     };
 
