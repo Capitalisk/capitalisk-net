@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/Leasehold/leasehold-net#readme",
   "dependencies": {
-    "lp2p": "^3.1.4",
+    "lp2p": "^3.1.5",
     "lodash.shuffle": "^4.2.0"
   }
 }
