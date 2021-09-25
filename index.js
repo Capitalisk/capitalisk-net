@@ -402,14 +402,14 @@ class LeaseholdNet {
     this.p2p.on(EVENT_BAN_PEER, peerId => {
       this.logger.error(
         { peerId },
-        'EVENT_MESSAGE_RECEIVED: Peer has been banned temporarily'
+        'EVENT_BAN_PEER: Peer has been banned temporarily'
       );
     });
 
     this.p2p.on(EVENT_UNBAN_PEER, peerId => {
       this.logger.error(
         { peerId },
-        'EVENT_MESSAGE_RECEIVED: Peer ban has expired'
+        'EVENT_UNBAN_PEER: Peer ban has expired'
       );
     });
 
