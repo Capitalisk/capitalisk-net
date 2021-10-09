@@ -1,17 +1,17 @@
 {
-  "name": "leasehold-net",
+  "name": "capitalisk-net",
   "version": "5.1.6",
-  "description": "Leasehold network module.",
+  "description": "Capitalisk network module.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Leasehold/leasehold-net.git"
+    "url": "git+https://github.com/Capitalisk/capitalisk-net.git"
   },
   "keywords": [
-    "leasehold",
+    "capitalisk",
     "network",
     "module",
     "p2p"
@@ -19,11 +19,11 @@
   "author": "Jonathan Gros-Dubois",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/Leasehold/leasehold-net/issues"
+    "url": "https://github.com/Capitalisk/capitalisk-net/issues"
   },
-  "homepage": "https://github.com/Leasehold/leasehold-net#readme",
+  "homepage": "https://github.com/Capitalisk/capitalisk-net#readme",
   "dependencies": {
-    "lp2p": "^3.1.6",
+    "lp2p": "^4.0.0",
     "lodash.shuffle": "^4.2.0"
   }
 }

@@ -28,11 +28,11 @@ const {
 const DEFAULT_PEER_SAVE_INTERVAL = 10 * 60 * 1000; // 10 mins in ms
 const DEFAULT_PEER_LIST_FILE_PATH = path.join(__dirname, 'peers.json');
 const MAX_CHANNEL_NAME_LENGTH = 200;
-const DEFAULT_MODULE_ALIAS = 'leasehold_net';
+const DEFAULT_MODULE_ALIAS = 'capitalisk_net';
 
 const hasNamespaceReg = /:/;
 
-class LeaseholdNet {
+class CapitaliskNet {
   constructor({alias, logger, config}) {
     this.options = config;
     this.alias = alias || DEFAULT_MODULE_ALIAS;
@@ -144,7 +144,7 @@ class LeaseholdNet {
 
     if (this.options.peerSelectionPluginPath) {
       this.logger.debug(
-        `Using peer selection plugin at path ${this.options.peerSelectionPluginPath} relative to leasehold-net module`
+        `Using peer selection plugin at path ${this.options.peerSelectionPluginPath} relative to the capitalisk-net module`
       );
       let peerSelectionPlugin = require(this.options.peerSelectionPluginPath);
 
@@ -441,4 +441,4 @@ class LeaseholdNet {
   }
 };
 
-module.exports = LeaseholdNet;
+module.exports = CapitaliskNet;

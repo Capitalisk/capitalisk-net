@@ -1,2 +1,2 @@
-# leasehold-net
-Leasehold network module
+# capitalisk-net
+Capitalisk network module
