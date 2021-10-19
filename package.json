@@ -1,6 +1,6 @@
 {
   "name": "capitalisk-net",
-  "version": "6.0.1",
+  "version": "6.0.2",
   "description": "Capitalisk network module.",
   "main": "index.js",
   "scripts": {
@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/Capitalisk/capitalisk-net#readme",
   "dependencies": {
-    "lp2p": "^4.0.1",
+    "lp2p": "^4.0.2",
     "lodash.shuffle": "^4.2.0"
   }
 }
