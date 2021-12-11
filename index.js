@@ -26,7 +26,7 @@ const {
 } = require('lp2p');
 
 const DEFAULT_PEER_SAVE_INTERVAL = 10 * 60 * 1000; // 10 mins in ms
-const DEFAULT_PEER_LIST_FILE_PATH = path.join(__dirname, 'peers.json');
+const DEFAULT_PEER_LIST_FILE_PATH = path.resolve(__dirname, 'peers.json');
 const MAX_CHANNEL_NAME_LENGTH = 200;
 const DEFAULT_MODULE_ALIAS = 'capitalisk_net';
 
@@ -144,9 +144,9 @@ class CapitaliskNet {
 
     if (this.options.peerSelectionPluginPath) {
       this.logger.debug(
-        `Using peer selection plugin at path ${this.options.peerSelectionPluginPath} relative to the capitalisk-net module`
+        `Using peer selection plugin at path ${this.options.peerSelectionPluginPath} relative to the current working directory`
       );
-      let peerSelectionPlugin = require(this.options.peerSelectionPluginPath);
+      let peerSelectionPlugin = require(path.resolve(this.options.peerSelectionPluginPath));
 
       this.peerSelectionForConnection = peerSelectionPlugin.peerSelectionForConnection;
       this.peerSelectionForRequest = peerSelectionPlugin.peerSelectionForRequest;
@@ -157,7 +157,8 @@ class CapitaliskNet {
       );
     }
 
-    let peerListFilePath = this.options.peerListFilePath || DEFAULT_PEER_LIST_FILE_PATH;
+    let peerListFilePath = this.options.peerListFilePath == null ?
+      DEFAULT_PEER_LIST_FILE_PATH : path.resolve(this.options.peerListFilePath);
 
     // Load peers from the database that were tried or connected the last time node was running
     let previousPeersStr;
