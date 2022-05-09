@@ -1,6 +1,6 @@
 {
   "name": "capitalisk-net",
-  "version": "7.1.0",
+  "version": "7.1.1",
   "description": "Capitalisk network module.",
   "main": "index.js",
   "scripts": {
