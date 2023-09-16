@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/Capitalisk/capitalisk-net#readme",
   "dependencies": {
-    "lp2p": "^4.1.1",
+    "lp2p": "^5.0.0",
     "lodash.shuffle": "^4.2.0"
   }
 }
